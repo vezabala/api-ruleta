@@ -1,22 +1,25 @@
 package com.ruleta.zabala.apiruleta.api.controller;
 
 import com.ruleta.zabala.apiruleta.api.service.GenericService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
+import java.util.List;
 
-public abstract class GenericController<HK, HV> {
+public abstract class GenericController<HK, HV> extends ControllerGenericResponse<HV> {
 
     protected abstract GenericService<HK, HV> getService();
 
     @PostMapping()
-    String create(@RequestBody HV input){
-        getService().save(input);
-        return "Hello!";
+    @ResponseBody
+    ResponseEntity<RestResponse<HV>> create(@RequestBody HV input) {
+        String id = getService().save(input);
+        return buildResponse(id, HttpStatus.OK);
     }
 
     @GetMapping()
-    Map<HK, HV> list(){
+        List<HV> list(){
         System.out.println(getService().findAll());
         return getService().findAll();
     }

@@ -1,13 +1,19 @@
 package com.ruleta.zabala.apiruleta.api.modules.roulette.entities;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
+import java.util.UUID;
 
 import java.io.Serializable;
 
 @RedisHash("Roulette")
 public class Roulette implements Serializable{
+    @Id
     private String id;
     private Integer number;
     private Boolean status;
+    public Roulette(){
+        id = UUID.randomUUID().toString().replace("-", "");
+    }
     public String getId() {
 
         return id;
