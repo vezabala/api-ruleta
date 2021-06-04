@@ -1,6 +1,5 @@
 package com.ruleta.zabala.apiruleta.api.modules.roulette.entities;
 
-import org.springframework.data.annotation.Reference;
 import org.springframework.data.redis.core.RedisHash;
 
 import java.io.Serializable;
@@ -9,9 +8,11 @@ import java.io.Serializable;
 public class Bet implements Serializable {
     private static final long serialVersionUID = 7821110451301315929L;
     private String value;
+    private String resultValue;
     private Double cash;
-    public Bet(String value, Double cash) {
+    public Bet(String value, String resultValue, Double cash) {
         this.value = value;
+        this.resultValue = resultValue;
         this.cash = cash;
     }
     public String getValue() {
@@ -28,5 +29,12 @@ public class Bet implements Serializable {
     }
     public void setCash(Double cash) {
         this.cash = cash;
+    }
+    public String getResultValue() {
+
+        return resultValue;
+    }
+    public void setResultValue(String resultValue) {
+        this.resultValue = resultValue;
     }
 }
