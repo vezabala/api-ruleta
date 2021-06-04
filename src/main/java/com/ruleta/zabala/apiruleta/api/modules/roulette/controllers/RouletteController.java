@@ -25,6 +25,12 @@ public class RouletteController extends GenericController<String, Roulette> {
     protected GenericService<String, Roulette> getService() {
         return service;
     }
+    /**
+     * {@code GET /opening/:id}: open the roulette opening
+     * @param id of entity Roulette
+     * @param response
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the roulette, or with status {@code 404 (Not Found)}.
+     */
     @GetMapping("opening/{id}")
     @ResponseBody
     ResponseEntity<RestResponse<Roulette>> opening(@PathVariable("id") String id, HttpServletResponse response){
@@ -39,6 +45,12 @@ public class RouletteController extends GenericController<String, Roulette> {
 
         return buildResponse("Se ha realizado correctamente la apertura de la ruleta", HttpStatus.OK, entity);
     }
+    /**
+     * {@code GET /closing/:id}: open the roulette closing
+     * @param id of entity Roulette
+     * @param response
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the roulette, or with status {@code 404 (Not Found)}.
+     */
     @GetMapping("closing/{id}")
     @ResponseBody
     ResponseEntity<RestResponse<Roulette>> closing(@PathVariable("id") String id, HttpServletResponse response){
@@ -51,6 +63,12 @@ public class RouletteController extends GenericController<String, Roulette> {
         }
         return buildResponse("Se ha realizado correctamente el cierre de la ruleta", HttpStatus.OK, entity);
     }
+    /**
+     * {@code GET /bet/:id}: open the bet
+     * @param id of entity Roulette, in body the betDto and header user-id
+     * @param response
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the roulette, or with status {@code 404 (Not Found)}.
+     */
     @GetMapping({"/bet/{id}"})
     @ResponseBody
     ResponseEntity<RestResponse<Roulette>> bet(@PathVariable(value = "id", required = true) String id,

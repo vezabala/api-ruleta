@@ -12,6 +12,12 @@ public abstract class GenericController<HK, HV> extends ControllerGenericRespons
 
     protected abstract GenericService<HK, HV> getService();
 
+    /**
+     * {@code POST  /"entity"} : Create a new roulette or user
+     * @param input
+     * @param response
+     * @return @return the {@link ResponseEntity} with status {@code 201 (Created)}
+     */
     @PostMapping
     @ResponseBody
     ResponseEntity<RestResponse<HV>> create(@RequestBody(required = false) HV input, HttpServletResponse response){
