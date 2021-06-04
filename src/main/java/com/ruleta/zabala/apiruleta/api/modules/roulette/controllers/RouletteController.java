@@ -19,15 +19,40 @@ public class RouletteController extends GenericController<String, Roulette> {
     protected GenericService getService() {
         return service;
     }
-    @GetMapping("/{id}")
+    @GetMapping("opening/{id}")
     @ResponseBody
     ResponseEntity<RestResponse<Roulette>> opening(@PathVariable("id") String id){
         Roulette entity = null;
         try {
             entity = service.opening(id);
         } catch (Exception e) {
+
             return buildResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
+
         return buildResponse("Se ha realizado correctamente la apertura de la ruleta", HttpStatus.OK, entity);
+    }
+    @GetMapping("closing/{id}")
+    @ResponseBody
+    ResponseEntity<RestResponse<Roulette>> closing(@PathVariable("id") String id){
+        Roulette entity = null;
+        try {
+            entity = service.closing(id);
+        } catch (Exception e) {
+            return buildResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+        return buildResponse("Se ha realizado correctamente el cierre de la ruleta", HttpStatus.OK, entity);
+    }
+
+    @GetMapping("bet/{id}/{value}")
+    @ResponseBody
+    ResponseEntity<RestResponse<Roulette>> bet(@PathVariable("id") String id, @PathVariable("value") String value){
+        Roulette entity = null;
+        try {
+            entity = service.bet(id,value);
+        } catch (Exception e) {
+            return buildResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+        return buildResponse("Se ha realizado correctamente el cierre de la ruleta", HttpStatus.OK, entity);
     }
 }

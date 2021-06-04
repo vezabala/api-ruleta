@@ -1,7 +1,7 @@
 package com.ruleta.zabala.apiruleta.api.modules.roulette.entities;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
-import java.util.UUID;
+import java.util.List;
 
 import java.io.Serializable;
 
@@ -11,8 +11,8 @@ public class Roulette implements Serializable{
     private String id;
     private Integer number;
     private Boolean status;
+    private List<Bet> bet;
     public Roulette(){
-        id = UUID.randomUUID().toString().replace("-", "");
     }
     public String getId() {
 
@@ -34,5 +34,11 @@ public class Roulette implements Serializable{
     }
     public void setStatus(Boolean status) {
         this.status = status;
+    }
+    public List<Bet> getBet() {
+        return bet;
+    }
+    public void setBet(List<Bet> bet) {
+        this.bet = bet;
     }
 }
