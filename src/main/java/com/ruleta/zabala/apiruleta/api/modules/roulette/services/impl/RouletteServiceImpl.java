@@ -1,5 +1,6 @@
 package com.ruleta.zabala.apiruleta.api.modules.roulette.services.impl;
 
+import com.ruleta.zabala.apiruleta.api.helpers.RandomValueGenerator;
 import com.ruleta.zabala.apiruleta.api.modules.roulette.entities.Bet;
 import com.ruleta.zabala.apiruleta.api.modules.roulette.enums.TypeEnum;
 import com.ruleta.zabala.apiruleta.api.service.GenericService;
@@ -28,27 +29,40 @@ public class RouletteServiceImpl extends GenericService<String, Roulette> implem
     public List<Roulette> findAll() {
         return repository.findAll();
     }
-    public Roulette bet(String key, String value, TypeEnum type) throws Exception {
+    public Roulette bet(String key, Integer number, String color, TypeEnum type, Double money) throws Exception {
         Roulette roulette = repository.findById(key);
-        if(!validateValueByType(value, type))
+        if(roulette == null)
+            throw new Exception("No se ha encontrado la ruleta");
+        if(money == null || !(money >= 1 && money <= 10000))
+            throw new Exception("El rango en dinero para apuesta no está en el rango (entre 0 y 10000)");
+        if(!validateValueByType(number,color, type))
             throw new Exception("Los valores ingresados no son válidos");
         if(roulette.getStatus() == Boolean.FALSE)
             throw new Exception("La ruleta está cerrada");
         if(key == null)
             throw new Exception("La llave está vacía");
-        if(value == null)
-            throw new Exception("El valor a apostar no puede estar vacío");
-        Bet bet = new Bet(value, 500.0);
-        validateScoreArray(roulette, bet);
+        validateScoreArray(roulette, buildRouletteBet(number,color,money,type));
         repository.save(roulette);
         return roulette;
     }
-    private boolean validateValueByType(String value, TypeEnum typeEnum){
+    private Bet buildRouletteBet(Integer number, String color, Double money, TypeEnum typeEnum){
+        String resultValue = typeEnum.equals(TypeEnum.NUMBER) ?
+                String.valueOf(RandomValueGenerator.generateRandomNumber()) :
+                RandomValueGenerator.generateRandomColor().getValue();
+        String value = typeEnum.equals(TypeEnum.NUMBER) ?
+                String.valueOf(number) :
+                color;
+        if(value.equalsIgnoreCase(resultValue)){
+            System.out.println("Value="+value);
+            System.out.println("ResultValue="+resultValue);
+        }
+        return new Bet(value, resultValue, money);
+    }
+    private boolean validateValueByType(Integer number, String color, TypeEnum typeEnum){
         if(typeEnum.equals(TypeEnum.NUMBER)){
-            int number = Integer.parseInt(value);
             return number >= 0 && number <= 36;
         }
-        return value.equals(ROJO) || value.equals(NEGRO);
+        return color.equals(ROJO) || color.equals(NEGRO);
     }
     private void validateScoreArray(Roulette roulette, Bet bet) {
         if(roulette.getBet().isEmpty() || roulette.getBet() == null){

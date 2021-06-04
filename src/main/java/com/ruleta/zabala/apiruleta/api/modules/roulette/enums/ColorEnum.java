@@ -1,11 +1,11 @@
 package com.ruleta.zabala.apiruleta.api.modules.roulette.enums;
 
-public enum TypeEnum {
-    NUMBER("number"),
-    COLOR("color");
+public enum ColorEnum {
+    ROJO("rojo"),
+    NEGRO("negro");
 
     private String value;
-    TypeEnum(String s){
+    ColorEnum(String s){
         value = s;
     }
 
