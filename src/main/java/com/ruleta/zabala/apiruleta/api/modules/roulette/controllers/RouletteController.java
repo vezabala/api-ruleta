@@ -3,6 +3,7 @@ package com.ruleta.zabala.apiruleta.api.modules.roulette.controllers;
 import com.ruleta.zabala.apiruleta.api.controller.GenericController;
 import com.ruleta.zabala.apiruleta.api.controller.RestResponse;
 import com.ruleta.zabala.apiruleta.api.modules.roulette.entities.Roulette;
+import com.ruleta.zabala.apiruleta.api.modules.roulette.enums.TypeEnum;
 import com.ruleta.zabala.apiruleta.api.modules.roulette.services.impl.RouletteServiceImpl;
 import com.ruleta.zabala.apiruleta.api.service.GenericService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,7 @@ public class RouletteController extends GenericController<String, Roulette> {
     @Autowired
     RouletteServiceImpl service;
     @Override
-    protected GenericService getService() {
+    protected GenericService<String, Roulette> getService() {
         return service;
     }
     @GetMapping("opening/{id}")
@@ -43,16 +44,24 @@ public class RouletteController extends GenericController<String, Roulette> {
         }
         return buildResponse("Se ha realizado correctamente el cierre de la ruleta", HttpStatus.OK, entity);
     }
-
-    @GetMapping("bet/{id}/{value}")
+    @GetMapping({"bet/{id}/{type}/{value}"})
     @ResponseBody
-    ResponseEntity<RestResponse<Roulette>> bet(@PathVariable("id") String id, @PathVariable("value") String value){
-        Roulette entity = null;
+    ResponseEntity<RestResponse<Roulette>> bet(@PathVariable(value = "id", required = true) String id,
+                                               @PathVariable(value = "type", required = true) String type,
+                                               @PathVariable(value = "value", required = true) String value){
+        Roulette entity;
+        TypeEnum typeEnum = isValidType(type);
         try {
-            entity = service.bet(id,value);
+            if(type != null && typeEnum != null)
+                entity = service.bet(id,value,typeEnum);
+            else
+                throw new Exception("El tipo de valor ingresado no coindice con lo esperado {color, number}");
         } catch (Exception e) {
             return buildResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
         return buildResponse("Se ha realizado correctamente el cierre de la ruleta", HttpStatus.OK, entity);
+    }
+    private TypeEnum isValidType(String type) {
+        return TypeEnum.valueOf(type.toUpperCase());
     }
 }
