@@ -55,15 +55,16 @@ public class RouletteController extends GenericController<String, Roulette> {
     @ResponseBody
     ResponseEntity<RestResponse<Roulette>> bet(@PathVariable(value = "id", required = true) String id,
                                                @RequestBody BetDto betDto,
+                                               @RequestHeader(value = "user-id", required = true) String userId,
                                                HttpServletResponse response){
         Roulette entity;
         try {
-            entity = service.bet(id,betDto);
+            entity = service.bet(id,betDto, userId);
         } catch (Exception e) {
             response.setStatus(HttpStatus.BAD_REQUEST.value());
             return buildResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
         response.setStatus(HttpStatus.CREATED.value());
-        return buildResponse("Se ha realizado correctamente el cierre de la ruleta", HttpStatus.OK, entity);
+        return buildResponse("Se ha realizado correctamente la apuesta", HttpStatus.OK, entity);
     }
 }
