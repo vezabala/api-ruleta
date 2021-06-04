@@ -24,6 +24,10 @@ public class RouletteServiceImpl extends GenericService<String, Roulette> implem
     RouletteRepository repository;
     @Override
     public String save(Roulette entity) {
+        if(entity == null){
+            entity = new Roulette();
+            entity.setStatus(Boolean.FALSE);
+        }
         entity.setId(UUID.randomUUID().toString().replace("-", ""));
         return repository.save(entity);
     }
