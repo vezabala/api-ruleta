@@ -7,7 +7,7 @@ import com.ruleta.zabala.apiruleta.api.modules.roulette.services.RouletteService
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
+import java.util.List;
 
 @Service
 public class RouletteServiceImpl extends GenericService<String, Roulette> implements RouletteService {
@@ -15,11 +15,22 @@ public class RouletteServiceImpl extends GenericService<String, Roulette> implem
     RouletteRepository repository;
     public static final String HEADER = "ROULETTE";
     @Override
-    public void save(Roulette entity) {
-        repository.save(entity);
+    public String save(Roulette entity) {
+        return repository.save(entity);
     }
     @Override
-    public Map<String, Roulette> findAll() {
-        return (Map<String, Roulette>) repository.findAll();
+    public List<Roulette> findAll() {
+        return repository.findAll();
+    }
+
+    public Roulette opening(String key) throws Exception {
+        Roulette roulette = repository.findById(key);
+        if(key == null)
+            throw new Exception("La llave está vacía");
+        if(roulette == null)
+            throw new Exception("No existe la ruleta");
+        roulette.setStatus(Boolean.TRUE);
+        repository.updateStatus(roulette);
+        return roulette;
     }
 }
