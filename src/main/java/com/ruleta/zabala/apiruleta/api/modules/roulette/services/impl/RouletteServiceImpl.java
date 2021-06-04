@@ -4,6 +4,8 @@ import com.ruleta.zabala.apiruleta.api.helpers.RandomValueGenerator;
 import com.ruleta.zabala.apiruleta.api.modules.roulette.dto.BetDto;
 import com.ruleta.zabala.apiruleta.api.modules.roulette.entities.Bet;
 import com.ruleta.zabala.apiruleta.api.modules.roulette.enums.TypeEnum;
+import com.ruleta.zabala.apiruleta.api.modules.user.entities.User;
+import com.ruleta.zabala.apiruleta.api.modules.user.repository.UserRepository;
 import com.ruleta.zabala.apiruleta.api.service.GenericService;
 import com.ruleta.zabala.apiruleta.api.modules.roulette.entities.Roulette;
 import com.ruleta.zabala.apiruleta.api.modules.roulette.repository.RouletteRepository;
@@ -22,6 +24,8 @@ public class RouletteServiceImpl extends GenericService<String, Roulette> implem
     public static final String NEGRO = "negro";
     @Autowired
     RouletteRepository repository;
+    @Autowired
+    UserRepository userRepository;
     @Override
     public String save(Roulette entity) {
         if(entity == null){
@@ -35,20 +39,25 @@ public class RouletteServiceImpl extends GenericService<String, Roulette> implem
     public List<Roulette> findAll() {
         return repository.findAll();
     }
-    public Roulette bet(String key, BetDto dto) throws Exception {
+    public Roulette bet(String key, BetDto dto, String userId) throws Exception {
+        User user = userRepository.findById(userId);
         TypeEnum type = this.isValidType(dto);
         Roulette roulette = repository.findById(key);
+        if(user == null)
+            throw new Exception("No se ha encontrado el usuario");
         if(roulette == null)
             throw new Exception("No se ha encontrado la ruleta");
+        if(roulette.getStatus() == Boolean.FALSE)
+            throw new Exception("La ruleta está cerrada");
+        if(user.getBalance() < dto.getMoney())
+            throw new Exception("El usuario no posee fondo suficiente para apostar");
         if(!(dto.getMoney() >= 1 && dto.getMoney() <= 10000))
             throw new Exception("El rango en dinero para apuesta no está en el rango (entre 0 y 10000)");
         if(!validateValueByType(dto.getNumber(),dto.getColor(), type))
             throw new Exception("Los valores ingresados no son válidos");
-        if(roulette.getStatus() == Boolean.FALSE)
-            throw new Exception("La ruleta está cerrada");
         if(key == null)
             throw new Exception("La llave está vacía");
-        validateScoreArray(roulette, buildRouletteBet(dto.getNumber(),dto.getColor(),dto.getMoney(),type));
+        validateScoreArray(roulette, buildRouletteBet(dto.getNumber(),dto.getColor(),dto.getMoney(),type,user));
         repository.save(roulette);
         return roulette;
     }
@@ -63,18 +72,18 @@ public class RouletteServiceImpl extends GenericService<String, Roulette> implem
             return TypeEnum.NUMBER;
         throw new Exception("No se ha ingresado un tipo de dato esperado.");
     }
-    private Bet buildRouletteBet(Integer number, String color, Double money, TypeEnum typeEnum){
+    private Bet buildRouletteBet(Integer number, String color, Double money, TypeEnum typeEnum, User user){
         String resultValue = typeEnum.equals(TypeEnum.NUMBER) ?
                 String.valueOf(RandomValueGenerator.generateRandomNumber()) :
                 RandomValueGenerator.generateRandomColor().getValue();
         String value = typeEnum.equals(TypeEnum.NUMBER) ?
                 String.valueOf(number) :
                 color;
-        if(value.equalsIgnoreCase(resultValue)){
-            System.out.println("Value="+value);
-            System.out.println("ResultValue="+resultValue);
-        }
-        return new Bet(value, resultValue, money);
+        if(value.equalsIgnoreCase(resultValue))
+            user.setBalance(user.getBalance() + money);
+        else
+            user.setBalance(user.getBalance() - money);
+        return new Bet(value, resultValue, money, user);
     }
     private boolean validateValueByType(Integer number, String color, TypeEnum typeEnum){
         if(typeEnum.equals(TypeEnum.NUMBER)){
