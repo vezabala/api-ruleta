@@ -24,13 +24,6 @@ public class Roulette implements Serializable{
     public void setId(String id) {
         this.id = id;
     }
-    public Integer getNumber() {
-
-        return number;
-    }
-    public void setNumber(Integer number) {
-        this.number = number;
-    }
     public Boolean getStatus() {
 
         return status;
